@@ -10,6 +10,11 @@ def d_preprocess(G):
     #Check Graph Type
     #Currently only undirected graphs are accepted
     
+    #Remove Loops
+    if list(G.selfloop_edges()):
+        print("WARNING: Loops will be ignored.")
+        G.remove_edges_from(G.selfloop_edges())
+    
     #Check if all existing arcs have weights, otherwise assign value of 1
     #Also removes negative weights
     for u,v,data in G.edges(data=True):
@@ -28,17 +33,15 @@ def d_preprocess(G):
     wei_deg = dict(nx.degree(G, weight ="weight"))
     
     
-    return G, n1, deg, wei_deg
+    return G, n1, deg, wei_deg, totalWEI
 
 
 #G is a 
 def d_all (G, normalize = False):
     
-    G = d_preprocess(G)
+    G, n1, deg, wei_deg, totalWEI = d_preprocess(G)
     
- 
-    
-    #Computes Distinctiveness Centrality
+    #Computes Distinctiveness Centrality, all 5 metrics
     distinctiveness = {}
     for u,v,data in G.edges(data=True):    
         d1u = data['weight'] * np.log10(n1/deg[v])
