@@ -1,5 +1,5 @@
 # Distinctiveness Centrality - Python Library
-A Python library to calculate Distinctiveness Centrality in social networks. The current implementation is based on [Networkx](https://github.com/networkx/networkx){:target="_blank"}.
+A Python library to calculate Distinctiveness Centrality in social networks. The current implementation is based on [Networkx](https://github.com/networkx/networkx).
 
 
 In contrast to established metrics, which identify central nodes based on their brokerage
