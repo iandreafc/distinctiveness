@@ -62,14 +62,16 @@ def d_preprocess(G, alpha = 1):
     
     #Calculates degree and weighted degree
     deg = dict(nx.degree(G))
-    
     if alpha > 1:
         wei_deg = dict(nx.degree(G, weight ="weight"))
         wei_deg_alpha = {k:v**alpha for k,v in wei_deg.items()}
     else:
         wei_deg_alpha = dict(nx.degree(G, weight ="weight"))
     
-    return G, n1, deg, wei_deg_alpha, totalWEI
+    #Calculates max arc weight
+    maxwij = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
+    
+    return G, n1, deg, wei_deg_alpha, totalWEI, maxwij
 
 
 #G is a 
@@ -79,7 +81,7 @@ def d_all (G, alpha = 1, normalize = False):
         print("WARNING. Alpha cannot be lower than 1. The value is set to 1.")
         alpha = 1
     
-    G, n1, deg, wei_deg_alpha, totalWEI = d_preprocess(G, alpha = alpha)
+    G, n1, deg, wei_deg_alpha, totalWEI, maxwij = d_preprocess(G, alpha = alpha)
     
     #Computes Distinctiveness Centrality, all 5 metrics
     distinctiveness = {}
@@ -111,5 +113,14 @@ def d_all (G, alpha = 1, normalize = False):
     d3 = {k:v[2] for k,v in distinctiveness.items()}
     d4 = {k:v[3] for k,v in distinctiveness.items()}
     d5 = {k:v[4] for k,v in distinctiveness.items()}
+    
+    if normalize == True:
+        D1max = np.log10(n1) * n1 * maxwij
+        D2max = np.log10(n1) * n1
+        D3max = np.log10(maxwij * n1) * maxwij * n1
+        D4max = n1 * maxwij
+        D5max = n1
+    
+    
     
     return d1,d2,d3,d4,d5
