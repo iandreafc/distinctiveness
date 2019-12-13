@@ -4,11 +4,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="distinctivenesscentrality",
+    name="distinctiveness-centrality",
     version="0.0.1",
     author="Andrea Fronzetti Colladon",
-    author_email="andrea.fronzetticolladon@unipg.it",
-    description="A Python package to calculate Distinctiveness Centrality in networks",
+    author_email="a@andreafc.com",
+    description="A Python package to calculate Distinctiveness Centrality",
     long_description=long_description,
     license="MIT",
     long_description_content_type="text/markdown",
