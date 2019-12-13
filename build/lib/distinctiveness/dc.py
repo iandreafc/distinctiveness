@@ -30,9 +30,10 @@ def g_preprocess(G, alpha = 1):
         G = G1.copy()
     
     #Remove Loops
-    if list(G.selfloop_edges()):
+    loops = list(nx.selfloop_edges(G))
+    if loops:
         print("WARNING: Loops will be ignored.")
-        G.remove_edges_from(G.selfloop_edges())
+        G.remove_edges_from(loops)
     
     #Check if all existing arcs have weights, otherwise assign value of 1
     #Also set negative weights to 1

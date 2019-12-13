@@ -1,10 +1,10 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("Pypi.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="dist_centrality",
+    name="distinctiveness",
     version="0.0.1",
     author="Andrea Fronzetti Colladon",
     author_email="a@andreafc.com",

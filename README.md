@@ -12,7 +12,7 @@ Formulas and full descriptions are provided in [this paper](https://arxiv.org/ab
 
 ## Installation
 ```python
-pip install dist-centrality
+pip install distinctiveness
 ```
 
 ## Quick Start and Tutorials

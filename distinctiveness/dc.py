@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 
 
-def d_preprocess(G, alpha = 1):
+def g_preprocess(G, alpha = 1):
     
     #Make an independent copy of the graph
     G = G.copy()
@@ -30,9 +30,10 @@ def d_preprocess(G, alpha = 1):
         G = G1.copy()
     
     #Remove Loops
-    if list(G.selfloop_edges()):
+    loops = list(nx.selfloop_edges(G))
+    if loops:
         print("WARNING: Loops will be ignored.")
-        G.remove_edges_from(G.selfloop_edges())
+        G.remove_edges_from(loops)
     
     #Check if all existing arcs have weights, otherwise assign value of 1
     #Also set negative weights to 1
@@ -88,7 +89,7 @@ def dc_all (G, alpha = 1, normalize = False):
         print("WARNING. Alpha cannot be lower than 1. The value is set to 1.")
         alpha = 1
     
-    G, n1, deg, indeg, outdeg, wei_indeg_alpha, wei_outdeg_alpha, wei_deg_alpha, totalWEI, maxwij = d_preprocess(G, alpha = alpha)
+    G, n1, deg, indeg, outdeg, wei_indeg_alpha, wei_outdeg_alpha, wei_deg_alpha, totalWEI, maxwij = g_preprocess(G, alpha = alpha)
     Glist = list(G.nodes)
 
     #Define max of all metrics

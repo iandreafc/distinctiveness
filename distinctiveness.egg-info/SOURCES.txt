@@ -1,0 +1,8 @@
+README.md
+setup.py
+distinctiveness/__init__.py
+distinctiveness/dc.py
+distinctiveness.egg-info/PKG-INFO
+distinctiveness.egg-info/SOURCES.txt
+distinctiveness.egg-info/dependency_links.txt
+distinctiveness.egg-info/top_level.txt
