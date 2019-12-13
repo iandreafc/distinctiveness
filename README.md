@@ -1,8 +1,8 @@
-# Distinctiveness Centrality in Social Networks - Python Library
+# Distinctiveness Centrality - Python Library
 A Python library to calculate Distinctiveness Centrality in social networks. 
 
 ```diff
-! This is still a beta version. This line will be removed as soon as first stable version is released. 
+! This is still a beta version. This line will be removed as soon as the first stable release is available. 
 ```
 
 Distinctiveness Centrality is a new set of network metrics which attribute a larger importance to connections with network periphery. 
@@ -12,11 +12,11 @@ Formulas and full descriptions are provided in [this paper](https://arxiv.org/ab
 
 ## Installation
 ```python
-pip install distinctivness-centrality
+pip install dist-centrality
 ```
 
 ## Quick Start and Tutorials
-- A quick-start demo is available in [this notebook](DistinctivenessCentralityDemo.ipynb).
+- A quick-start demo is in [this notebook](DistinctivenessCentralityDemo.ipynb).
 
 More materials will follow in the near future.
 

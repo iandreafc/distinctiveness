@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="distinctiveness-centrality",
+    name="dist_centrality",
     version="0.0.1",
     author="Andrea Fronzetti Colladon",
     author_email="a@andreafc.com",
