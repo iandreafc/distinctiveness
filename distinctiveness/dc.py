@@ -109,20 +109,20 @@ def dc_all (G, alpha = 1, normalize = False):
         d1_in = d2_in = d3_in = d4_in = d5_in = d1_out = d2_out = d3_out = d4_out = d5_out = np.nan
         
         for u,v,data in G.edges(data=True):    
-            d1[u] = (data['weight'] * np.log10(n1 / deg[v]**alpha)) / D1max
-            d1[v] = (data['weight'] * np.log10(n1 / deg[u]**alpha)) / D1max
+            d1[u] += (data['weight'] * np.log10(n1 / deg[v]**alpha)) / D1max
+            d1[v] += (data['weight'] * np.log10(n1 / deg[u]**alpha)) / D1max
             
-            d2[u] = (1 * np.log10(n1 / deg[v]**alpha)) / D2max
-            d2[v] = (1 * np.log10(n1 / deg[u]**alpha)) / D2max
+            d2[u] += (1 * np.log10(n1 / deg[v]**alpha)) / D2max
+            d2[v] += (1 * np.log10(n1 / deg[u]**alpha)) / D2max
             
-            d3[u] = (data['weight'] * np.log10(totalWEI/(wei_deg_alpha[v] - data['weight']**alpha + 1))) / D3max
-            d3[v] = (data['weight'] * np.log10(totalWEI/(wei_deg_alpha[u] - data['weight']**alpha + 1))) / D3max
+            d3[u] += (data['weight'] * np.log10(totalWEI/(wei_deg_alpha[v] - data['weight']**alpha + 1))) / D3max
+            d3[v] += (data['weight'] * np.log10(totalWEI/(wei_deg_alpha[u] - data['weight']**alpha + 1))) / D3max
             
-            d4[u] = (data['weight'] * (data['weight']**alpha / wei_deg_alpha[v])) / D4max
-            d4[v] = (data['weight'] * (data['weight']**alpha / wei_deg_alpha[u])) / D4max
+            d4[u] += (data['weight'] * (data['weight']**alpha / wei_deg_alpha[v])) / D4max
+            d4[v] += (data['weight'] * (data['weight']**alpha / wei_deg_alpha[u])) / D4max
             
-            d5[u] = (1* (1 / deg[v]**alpha)) / D5max
-            d5[v] = (1* (1 / deg[u]**alpha)) / D5max
+            d5[u] += (1* (1 / deg[v]**alpha)) / D5max
+            d5[v] += (1* (1 / deg[u]**alpha)) / D5max
         
     elif type(G) == nx.DiGraph:
         #Set keys to zero for all nodes (to take isolates into account and nodes with zero in- or out-degree)
@@ -130,20 +130,20 @@ def dc_all (G, alpha = 1, normalize = False):
         d1 = d2 = d3 = d4 = d5 = np.nan
         
         for u,v,data in G.edges(data=True):    
-            d1_in[v] = (data['weight'] * np.log10(n1 / outdeg[u]**alpha)) / D1max
-            d1_out[u] = (data['weight'] * np.log10(n1 / indeg[v]**alpha)) / D1max
+            d1_in[v] += (data['weight'] * np.log10(n1 / outdeg[u]**alpha)) / D1max
+            d1_out[u] += (data['weight'] * np.log10(n1 / indeg[v]**alpha)) / D1max
             
-            d2_in[v] = (1 * np.log10(n1 / outdeg[u]**alpha)) / D2max
-            d2_out[u] = (1 * np.log10(n1 / indeg[v]**alpha)) / D2max
+            d2_in[v] += (1 * np.log10(n1 / outdeg[u]**alpha)) / D2max
+            d2_out[u] += (1 * np.log10(n1 / indeg[v]**alpha)) / D2max
             
-            d3_in[v] = (data['weight'] * np.log10(totalWEI/(wei_outdeg_alpha[u] - data['weight']**alpha + 1))) / D3max
-            d3_out[u] = (data['weight'] * np.log10(totalWEI/(wei_indeg_alpha[v] - data['weight']**alpha + 1))) / D3max
+            d3_in[v] += (data['weight'] * np.log10(totalWEI/(wei_outdeg_alpha[u] - data['weight']**alpha + 1))) / D3max
+            d3_out[u] += (data['weight'] * np.log10(totalWEI/(wei_indeg_alpha[v] - data['weight']**alpha + 1))) / D3max
             
-            d4_in[v] = (data['weight'] * (data['weight']**alpha / wei_outdeg_alpha[u])) / D4max
-            d4_out[u] = (data['weight'] * (data['weight']**alpha / wei_indeg_alpha[v])) / D4max
+            d4_in[v] += (data['weight'] * (data['weight']**alpha / wei_outdeg_alpha[u])) / D4max
+            d4_out[u] += (data['weight'] * (data['weight']**alpha / wei_indeg_alpha[v])) / D4max
             
-            d5_in[v] = (1* (1 / outdeg[u]**alpha)) / D5max
-            d5_out[u] = (1* (1 / indeg[v]**alpha)) / D5max
+            d5_in[v] += (1* (1 / outdeg[u]**alpha)) / D5max
+            d5_out[u] += (1* (1 / indeg[v]**alpha)) / D5max
            
             
     DC = {"D1":d1, "D2":d2, "D3":d3, "D4":d4, "D5":d5,
