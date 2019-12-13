@@ -9,7 +9,7 @@ Formulas and full descriptions are provided in [this paper](https://arxiv.org/ab
 
 ## Installation
 ```python
-pip install distinctivness_centrality
+pip install distinctivness-centrality
 ```
 
 ## Quick Start and Tutorials
