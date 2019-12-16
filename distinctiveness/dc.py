@@ -86,8 +86,7 @@ def g_preprocess(G, alpha = 1):
 def dc_all (G, alpha = 1, normalize = False):
     
     if alpha < 1:
-        print("WARNING. Alpha cannot be lower than 1. The value is set to 1.")
-        alpha = 1
+        print("WARNING. Alpha should be >= 1, except you exactly know what you are doing.")
     
     G, n1, deg, indeg, outdeg, wei_indeg_alpha, wei_outdeg_alpha, wei_deg_alpha, totalWEI, maxwij = g_preprocess(G, alpha = alpha)
     Glist = list(G.nodes)
