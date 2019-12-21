@@ -95,14 +95,14 @@ def dc_all (G, alpha = 1, normalize = False):
     if normalize == True:
         D1max = np.log10(n1) * n1 * maxwij
         D2max = np.log10(n1) * n1
-        D3max = np.log10(maxwij * n1) * maxwij * n1
+        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1 
         D4max = n1 * maxwij
         D5max = n1
-        D1min = 0
-        D2min = 0
-        D3min = 0
+        D1min = (1-alpha) * maxwij * np.log10(n1)
+        D2min = (1-alpha) * np.log10(n1)
+        D3min = 
         D4min = 0
-        D5min = 0
+        D5min = 0 #considers isolates
     else:
         D1max = D2max = D3max = D4max = D5max = 1
         D1min = D2min = D3min = D4min = D5min = 0
