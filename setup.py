@@ -5,7 +5,7 @@ with open("Pypi.md", "r") as fh:
 
 setuptools.setup(
     name="distinctiveness",
-    version="0.0.4",
+    version="0.0.5",
     author="Andrea Fronzetti Colladon",
     author_email="a@andreafc.com",
     description="A Python package to calculate Distinctiveness Centrality",
