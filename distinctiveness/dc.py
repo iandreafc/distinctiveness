@@ -94,6 +94,9 @@ def dc_all (G, alpha = 1, normalize = False):
     
     if alpha < 1:
         print("WARNING. Alpha should be >= 1, except you exactly know what you are doing.")
+        if normalize == True:
+            print("For alpha < 1 normalization is not carried out.")
+            normalize = False
     
     G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij = g_preprocess(G, alpha = alpha)
     Glist = list(G.nodes)
