@@ -108,8 +108,8 @@ def dc_all (G, alpha = 1, normalize = False):
         D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1 
         D4max = n1 * maxwij
         D5max = n1
-        D1min = (1-alpha) * maxwij * np.log10(n1)
-        D2min = (1-alpha) * np.log10(n1)
+        D1min = (1-alpha) * maxwij * np.log10(n1) * n1
+        D2min = (1-alpha) * np.log10(n1) * n1
         if alpha > 1:
             D3min = maxwij * np.log10(maxwij * n1 / ((n1-1) * (maxwij**alpha) +1))
         else:
