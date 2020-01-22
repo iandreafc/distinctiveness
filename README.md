@@ -5,8 +5,8 @@ A Python library to calculate Distinctiveness Centrality in social networks.
 ! This is still an alpha version. This line will be removed as soon as the first stable release is available. 
 ```
 
-Distinctiveness Centrality is a new set of network metrics which attribute a larger importance to connections with network periphery. 
-This provides an alternative view to that of some established metrics, which identify central nodes based on their brokerage power, the number and weight of their connections, and the ability to quickly reach all other nodes.
+Distinctiveness Centrality is a new set of network metrics which attribute a larger importance to connections with  peripheral nodes, i.e. nodes with low degree. 
+This provides an alternative view to that of some established metrics, which identify central nodes based on their brokerage power, the number and weight of their connections, and their ability to quickly reach all other nodes.
 
 Formulas and full descriptions are provided in [this paper](https://arxiv.org/abs/1912.03391).
 
