@@ -53,7 +53,7 @@ def g_preprocess(G, alpha = 1):
     
     n1 = nx.number_of_nodes(G) - 1
     
-    #Calculates degree and weighted degree
+    #Calculate degree and weighted degree, taking alpha into account
     if type(G) == nx.Graph:
         deg = dict(nx.degree(G))
         indeg = outdeg = wei_insum_alpha = wei_outsum_alpha = np.nan
@@ -82,7 +82,7 @@ def g_preprocess(G, alpha = 1):
             wei_outsum_alpha = dict(G.out_degree(weight ="weight"))
             
         
-    #Calculates max arc weight
+    #Calculate max arc weight
     maxwij = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
     
     return G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij
