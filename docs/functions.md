@@ -7,4 +7,4 @@ The are five formulas that can be used to calculate Distinctiveness Centrality. 
 
 - **`G`** is a [Networkx](https://networkx.github.io) graph object.
 - **`normalize`** can be set to True, to obtain normalized scores for each metric.
-- **`alpha`** can have a value equal to 1 or bigger. Represents the value of the alpha parameter used in the generalized formulas of distinctiveness centrality.
+- **`alpha`** must be set greater or equal to 1. It represents the value of the alpha parameter used in the generalized formulas of distinctiveness centrality.
