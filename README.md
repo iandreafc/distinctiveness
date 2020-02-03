@@ -22,4 +22,4 @@ pip install distinctiveness
 
 
 ## Please cite as
-Fronzetti Colladon, A., & Naldi, M. (2019). Distinctiveness Centrality in Social Networks. Manuscript submitted for publication.[http://arxiv.org/abs/1912.03391](http://arxiv.org/abs/1912.03391)
+Fronzetti Colladon, A., & Naldi, M. (2019). Distinctiveness Centrality in Social Networks. Manuscript submitted for publication. [http://arxiv.org/abs/1912.03391](http://arxiv.org/abs/1912.03391)
