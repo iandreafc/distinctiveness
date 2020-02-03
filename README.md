@@ -18,8 +18,8 @@ pip install distinctiveness
 ## Quick Start and Tutorials
 - A quick-start demo is in [this notebook](DistinctivenessCentralityDemo.ipynb).
 
-More materials will follow in the near future.
+- The package documentation is at ReadTheDocs, at [this link]().
 
 
 ## Please cite as
-Fronzetti Colladon, A., & Naldi, M. (2019). Distinctiveness Centrality in Social Networks. Manuscript submitted for publication. Retrieved from http://arxiv.org/abs/1912.03391
+Fronzetti Colladon, A., & Naldi, M. (2019). Distinctiveness Centrality in Social Networks. Manuscript submitted for publication. Retrieved from [http://arxiv.org/abs/1912.03391](http://arxiv.org/abs/1912.03391)
