@@ -1,0 +1,10 @@
+site_name: distinctiveness
+site_author: Andrea Fronzetti Colladon
+site_description: Documentation of the 'distinctiveness' Python package.
+nav:
+    - Home: index.md
+    - Functions: functions.md
+theme: readthedocs
+#repo_url: https://github.com/iandreafc/distinctiveness/
+#repo_name: 'GitHub'
+
