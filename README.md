@@ -18,7 +18,7 @@ pip install distinctiveness
 ## Quick Start and Tutorials
 - A quick-start demo is in [this notebook](DistinctivenessCentralityDemo.ipynb).
 
-- The package documentation is at ReadTheDocs, at [this link]().
+- The package documentation is at ReadTheDocs, at [this link](https://distinctiveness.readthedocs.io).
 
 
 ## Please cite as
