@@ -84,8 +84,9 @@ def g_preprocess(G, alpha = 1):
         
     #Calculate max arc weight
     maxwij = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
+    minwij = min(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
     
-    return G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij
+    return G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij
 
 
 
@@ -98,23 +99,35 @@ def dc_all (G, alpha = 1, normalize = False):
             print("For alpha < 1 normalization is not carried out.")
             normalize = False
     
-    G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij = g_preprocess(G, alpha = alpha)
+    G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij = g_preprocess(G, alpha = alpha)
     Glist = list(G.nodes)
 
     #Define max of all metrics
     if normalize == True:
         D1max = np.log10(n1) * n1 * maxwij
-        D2max = np.log10(n1) * n1
-        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1 
-        D4max = n1 * maxwij
-        D5max = n1
         D1min = (1-alpha) * maxwij * np.log10(n1) * n1
+        
+        D2max = np.log10(n1) * n1
         D2min = (1-alpha) * np.log10(n1) * n1
-        if alpha > 1:
-            D3min = maxwij * np.log10(maxwij * n1 / ((n1-1) * (maxwij**alpha) +1))
-        else:
+        
+        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1     
+        D3alpha1 = np.log10(maxwij + ((minwij-1)/(n1-1))) / np.log10(maxwij)
+        D3alpha2 = np.log10((n1*(maxwij-1))/(n1-1)) / np.log10(maxwij)
+        if alpha > 1 and alpha < D3alpha1:
+            D3min = minwij * np.log10((minwij + (n1-1)*maxwij) / ((n1-1) * (maxwij**alpha) +1))
+        elif alpha > 1 and alpha > D3alpha2:
+            D3min = maxwij * np.log10((maxwij * n1) / ((n1-1) * (maxwij**alpha) +1))
+        elif alpha == 1:
             D3min = 0 #isolates
+        else: #do no normalize (if not in range)
+            print("Normalization of D3 is not carried out, for this value of alpha.")
+            D3max = 1
+            D3min = 0 
+        
+        D4max = n1 * maxwij
         D4min = 0
+        
+        D5max = n1
         D5min = 0 #considers isolates
     else:
         D1max = D2max = D3max = D4max = D5max = 1
