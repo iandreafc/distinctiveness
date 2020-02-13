@@ -80,13 +80,20 @@ def g_preprocess(G, alpha = 1):
         else:
             wei_insum_alpha = dict(G.in_degree(weight ="weight"))
             wei_outsum_alpha = dict(G.out_degree(weight ="weight"))
-            
         
-    #Calculate max arc weight
-    maxwij = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
-    minwij = min(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
     
-    return G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij
+    #Calculate max arc weight
+    if G.number_of_edges() > 0:
+        hasedges = True
+        maxwij = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
+        minwij = min(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
+    else:
+        print("Graph has no edges (after removing loops). I will return all zeros, regardless of normalizaiton.")
+        hasedges = False
+        maxwij = np.nan
+        minwij = np.nan
+    
+    return G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij, hasedges
 
 
 
@@ -99,9 +106,13 @@ def dc_all (G, alpha = 1, normalize = False):
             print("For alpha < 1 normalization is not carried out.")
             normalize = False
     
-    G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij = g_preprocess(G, alpha = alpha)
-    Glist = list(G.nodes)
+    G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij, hasedges = g_preprocess(G, alpha = alpha)
+    
+    if not hasedges:
+        normalize = False
 
+    Glist = list(G.nodes)
+    
     #Define max of all metrics
     if normalize == True:
         D1max = np.log10(n1) * n1 * maxwij
