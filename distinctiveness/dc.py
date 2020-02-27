@@ -4,6 +4,14 @@ import numpy as np
 
 def g_preprocess(G, alpha = 1):
     
+    if isinstance(alpha, list) and len(alpha) == 5:
+        alphalist = alpha            
+    elif isinstance(alpha, (int, float)):
+        alphalist = [alpha] * 5
+    else:
+        print("Error in the choice of alpha. Please specify a single number or a list of 5 values.")
+        return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
+    
     #Make an independent copy of the graph
     G = G.copy()
     
@@ -30,8 +38,8 @@ def g_preprocess(G, alpha = 1):
         G = G1.copy()
     
     #Remove Loops
-    loops = list(nx.selfloop_edges(G))
-    if loops:
+    loops = nx.selfloop_edges(G)
+    if list(loops):
         print("WARNING: Loops will be ignored.")
         G.remove_edges_from(loops)
     
@@ -56,31 +64,68 @@ def g_preprocess(G, alpha = 1):
     #Calculate degree and weighted degree, taking alpha into account
     if type(G) == nx.Graph:
         deg = dict(nx.degree(G))
-        indeg = outdeg = wei_insum_alpha = wei_outsum_alpha = np.nan
+        indeg = outdeg = wei_insum_alpha_list = wei_outsum_alpha_list = np.nan
         
         #Calculate weighted degree, taking alpha into account
-        if alpha != 1:
-            wei_sum_alpha = {}
-            for node in G.nodes():
-                wei_sum_alpha[node] = sum([e[2]["weight"]**alpha for e in list(G.edges(node, data = True))])
+        if len(set(alphalist)) != 1: #case of different alphas for each metric
+            wei_sum_alpha_list = [0,0]
+            for a in alphalist[2:4]:  #Only needed for D3 and D4
+                if a != 1:
+                    wei_sum_alpha = {}
+                    for node in G.nodes():
+                        wei_sum_alpha[node] = sum([e[2]["weight"]**a for e in list(G.edges(node, data = True))])
+                else:
+                   wei_sum_alpha = dict(nx.degree(G, weight ="weight"))
+                   
+                wei_sum_alpha_list.append(wei_sum_alpha)
+            wei_sum_alpha_list += [0]
         else:
-           wei_sum_alpha = dict(nx.degree(G, weight ="weight")) 
+            if alphalist[0] != 1:
+                wei_sum_alpha = {}
+                for node in G.nodes():
+                    wei_sum_alpha[node] = sum([e[2]["weight"]**alphalist[0] for e in list(G.edges(node, data = True))])
+            else:
+               wei_sum_alpha = dict(nx.degree(G, weight ="weight")) 
+               
+            wei_sum_alpha_list =  [0,0] + [wei_sum_alpha] * 2 + [0] #Only needed for D3 and D4
             
     elif type(G) == nx.DiGraph:
-        deg = wei_sum_alpha = np.nan
+        deg = wei_sum_alpha_list = np.nan
         indeg = dict(G.in_degree())
         outdeg = dict(G.out_degree())
         
-        if alpha != 1:
-            wei_outsum_alpha = {}
-            wei_insum_alpha = {}
-            for node in G.nodes():
-                wei_outsum_alpha[node] = sum([e[2]["weight"]**alpha for e in list(G.out_edges(node, data = True))])
-                wei_insum_alpha[node] =  sum([e[2]["weight"]**alpha for e in list(G.in_edges(node, data = True))])
+        if len(set(alphalist)) != 1: #case of different alphas for each metric
+            wei_insum_alpha_list = [0,0]
+            wei_outsum_alpha_list = [0,0]
+            for a in alphalist[2:4]:
+                if a != 1:
+                    wei_outsum_alpha = {}
+                    wei_insum_alpha = {}
+                    for node in G.nodes():
+                        wei_outsum_alpha[node] = sum([e[2]["weight"]**a for e in list(G.out_edges(node, data = True))])
+                        wei_insum_alpha[node] =  sum([e[2]["weight"]**a for e in list(G.in_edges(node, data = True))])
+                else:
+                    wei_insum_alpha = dict(G.in_degree(weight ="weight"))
+                    wei_outsum_alpha = dict(G.out_degree(weight ="weight"))
+                    
+                wei_insum_alpha_list.append(wei_insum_alpha)
+                wei_outsum_alpha_list.append(wei_outsum_alpha)
+            
+            wei_insum_alpha_list += [0]
+            wei_outsum_alpha_list += [0]
         else:
-            wei_insum_alpha = dict(G.in_degree(weight ="weight"))
-            wei_outsum_alpha = dict(G.out_degree(weight ="weight"))
-        
+            if alphalist[0] != 1:
+                wei_outsum_alpha = {}
+                wei_insum_alpha = {}
+                for node in G.nodes():
+                    wei_outsum_alpha[node] = sum([e[2]["weight"]**alphalist[0] for e in list(G.out_edges(node, data = True))])
+                    wei_insum_alpha[node] =  sum([e[2]["weight"]**alphalist[0] for e in list(G.in_edges(node, data = True))])
+            else:
+                wei_insum_alpha = dict(G.in_degree(weight ="weight"))
+                wei_outsum_alpha = dict(G.out_degree(weight ="weight"))
+            
+            wei_insum_alpha_list = [0,0] + [wei_insum_alpha] * 2 + [0]
+            wei_outsum_alpha_list = [0,0] + [wei_outsum_alpha] * 2 + [0]
     
     #Calculate max arc weight
     if G.number_of_edges() > 0:
@@ -88,25 +133,33 @@ def g_preprocess(G, alpha = 1):
         maxwij = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
         minwij = min(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
     else:
-        print("Graph has no edges (after removing loops). I will return all zeros, regardless of normalizaiton.")
+        print("Graph has no edges (remember that loops have been removed). I will return all zeros, regardless of normalizaiton.")
         hasedges = False
         maxwij = np.nan
         minwij = np.nan
     
-    return G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij, hasedges
+    return G, n1, deg, indeg, outdeg, wei_insum_alpha_list, wei_outsum_alpha_list, wei_sum_alpha_list, totalWEI, maxwij, minwij, hasedges
 
 
 
 
 def dc_all (G, alpha = 1, normalize = False):
     
-    if alpha < 1:
+    if isinstance(alpha, list) and len(alpha) == 5:
+        alphalist = alpha            
+    elif isinstance(alpha, (int, float)):
+        alphalist = [alpha] * 5
+    else:
+        print("Error in the choice of alpha. Please specify a single number or a list of 5 values.")
+        return np.nan
+        
+    if any(a < 1 for a in alphalist):
         print("WARNING. Alpha should be >= 1, except you exactly know what you are doing.")
         if normalize == True:
-            print("For alpha < 1 normalization is not carried out.")
+            print("For alpha < 1 normalization is not carried out. This will be deactivated for all metrics.")
             normalize = False
     
-    G, n1, deg, indeg, outdeg, wei_insum_alpha, wei_outsum_alpha, wei_sum_alpha, totalWEI, maxwij, minwij, hasedges = g_preprocess(G, alpha = alpha)
+    G, n1, deg, indeg, outdeg, wei_insum_alpha_list, wei_outsum_alpha_list, wei_sum_alpha_list, totalWEI, maxwij, minwij, hasedges = g_preprocess(G, alpha = alpha)
     
     if not hasedges:
         normalize = False
@@ -116,19 +169,19 @@ def dc_all (G, alpha = 1, normalize = False):
     #Define max of all metrics
     if normalize == True:
         D1max = np.log10(n1) * n1 * maxwij
-        D1min = (1-alpha) * maxwij * np.log10(n1) * n1
+        D1min = (1-alphalist[0]) * maxwij * np.log10(n1) * n1
         
         D2max = np.log10(n1) * n1
-        D2min = (1-alpha) * np.log10(n1) * n1
+        D2min = (1-alphalist[1]) * np.log10(n1) * n1
         
         D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1     
         D3alpha1 = np.log10(maxwij + ((minwij-1)/(n1-1))) / np.log10(maxwij)
         D3alpha2 = np.log10((n1*(maxwij-1))/(n1-1)) / np.log10(maxwij)
-        if alpha > 1 and alpha < D3alpha1:
-            D3min = minwij * np.log10((minwij + (n1-1)*maxwij) / ((n1-1) * (maxwij**alpha) +1))
-        elif alpha > 1 and alpha > D3alpha2:
-            D3min = maxwij * np.log10((maxwij * n1) / ((n1-1) * (maxwij**alpha) +1))
-        elif alpha == 1:
+        if alphalist[2] > 1 and alphalist[2] < D3alpha1:
+            D3min = minwij * np.log10((minwij + (n1-1)*maxwij) / ((n1-1) * (maxwij**alphalist[2]) +1))
+        elif alphalist[2] > 1 and alphalist[2] > D3alpha2:
+            D3min = maxwij * np.log10((maxwij * n1) / ((n1-1) * (maxwij**alphalist[2]) +1))
+        elif alphalist[2] == 1:
             D3min = 0 #isolates
         else: #do no normalize (if not in range)
             print("Normalization of D3 is not carried out, for this value of alpha.")
@@ -151,20 +204,20 @@ def dc_all (G, alpha = 1, normalize = False):
         d1_in = d2_in = d3_in = d4_in = d5_in = d1_out = d2_out = d3_out = d4_out = d5_out = np.nan
         
         for u,v,data in G.edges(data=True):    
-            d1[u] += data['weight'] * np.log10(n1 / deg[v]**alpha)
-            d1[v] += data['weight'] * np.log10(n1 / deg[u]**alpha)
+            d1[u] += data['weight'] * np.log10(n1 / deg[v]**alphalist[0])
+            d1[v] += data['weight'] * np.log10(n1 / deg[u]**alphalist[0])
             
-            d2[u] += 1 * np.log10(n1 / deg[v]**alpha)
-            d2[v] += 1 * np.log10(n1 / deg[u]**alpha)
+            d2[u] += 1 * np.log10(n1 / deg[v]**alphalist[1])
+            d2[v] += 1 * np.log10(n1 / deg[u]**alphalist[1])
             
-            d3[u] += data['weight'] * np.log10(totalWEI/(wei_sum_alpha[v] - data['weight']**alpha + 1))
-            d3[v] += data['weight'] * np.log10(totalWEI/(wei_sum_alpha[u] - data['weight']**alpha + 1))
+            d3[u] += data['weight'] * np.log10(totalWEI/(wei_sum_alpha_list[2][v] - data['weight']**alphalist[2] + 1))
+            d3[v] += data['weight'] * np.log10(totalWEI/(wei_sum_alpha_list[2][u] - data['weight']**alphalist[2] + 1))
             
-            d4[u] += data['weight'] * (data['weight']**alpha / wei_sum_alpha[v])
-            d4[v] += data['weight'] * (data['weight']**alpha / wei_sum_alpha[u])
+            d4[u] += data['weight'] * (data['weight']**alphalist[3] / wei_sum_alpha_list[3][v])
+            d4[v] += data['weight'] * (data['weight']**alphalist[3] / wei_sum_alpha_list[3][u])
             
-            d5[u] += 1* (1 / deg[v]**alpha)
-            d5[v] += 1* (1 / deg[u]**alpha)
+            d5[u] += 1* (1 / deg[v]**alphalist[4])
+            d5[v] += 1* (1 / deg[u]**alphalist[4])
             
         if normalize == True:
             d1 = {k:(v-D1min)/(D1max-D1min) for k,v in d1.items()}
@@ -179,20 +232,20 @@ def dc_all (G, alpha = 1, normalize = False):
         d1 = d2 = d3 = d4 = d5 = np.nan
         
         for u,v,data in G.edges(data=True):    
-            d1_in[v] += data['weight'] * np.log10(n1 / outdeg[u]**alpha)
-            d1_out[u] += data['weight'] * np.log10(n1 / indeg[v]**alpha)
+            d1_in[v] += data['weight'] * np.log10(n1 / outdeg[u]**alphalist[0])
+            d1_out[u] += data['weight'] * np.log10(n1 / indeg[v]**alphalist[0])
             
-            d2_in[v] += 1 * np.log10(n1 / outdeg[u]**alpha)
-            d2_out[u] += 1 * np.log10(n1 / indeg[v]**alpha)
+            d2_in[v] += 1 * np.log10(n1 / outdeg[u]**alphalist[1])
+            d2_out[u] += 1 * np.log10(n1 / indeg[v]**alphalist[1])
             
-            d3_in[v] += data['weight'] * np.log10(totalWEI/(wei_outsum_alpha[u] - data['weight']**alpha + 1))
-            d3_out[u] += data['weight'] * np.log10(totalWEI/(wei_insum_alpha[v] - data['weight']**alpha + 1))
+            d3_in[v] += data['weight'] * np.log10(totalWEI/(wei_outsum_alpha_list[2][u] - data['weight']**alphalist[2] + 1))
+            d3_out[u] += data['weight'] * np.log10(totalWEI/(wei_insum_alpha_list[2][v] - data['weight']**alphalist[2] + 1))
             
-            d4_in[v] += data['weight'] * (data['weight']**alpha / wei_outsum_alpha[u])
-            d4_out[u] += data['weight'] * (data['weight']**alpha / wei_insum_alpha[v])
+            d4_in[v] += data['weight'] * (data['weight']**alphalist[3] / wei_outsum_alpha_list[3][u])
+            d4_out[u] += data['weight'] * (data['weight']**alphalist[3] / wei_insum_alpha_list[3][v])
             
-            d5_in[v] += 1* (1 / outdeg[u]**alpha)
-            d5_out[u] += 1* (1 / indeg[v]**alpha)
+            d5_in[v] += 1* (1 / outdeg[u]**alphalist[4])
+            d5_out[u] += 1* (1 / indeg[v]**alphalist[4])
            
         if normalize == True:
             d1_in = {k:(v-D1min)/(D1max-D1min) for k,v in d1_in.items()}
