@@ -44,16 +44,18 @@ def g_preprocess(G, alpha = 1):
         G.remove_edges_from(loops)
     
     #Check if all existing arcs have weights, otherwise assign value of 1
-    #Also set negative weights to 1
-    negwarn = False
-    for u,v,data in G.edges(data=True):
-        if not 'weight' in data:
-            data['weight'] = 1
-        elif data['weight'] < 0:
-            negwarn = True
-    if negwarn == True:
-        print("WARNING: graph contained arcs with negative weights, whose weight was changed to 1")
-    
+    #Check for negative weights, zero weights and weight lower than 1 
+    arcweights = [e[2]["weight"] for e in G.edges.data() if "weight" in e[2]]
+    numweights = len(arcweights)
+    arcweights = set(arcweights)
+    if any(w < 1 for w in arcweights):
+        print("ERROR: graph contains arcs with negative or zero weights, or weights lower than 1. Weights must be >= 1.")
+    if numweights != len(G.edges):
+        print("WARNING: weights are not specified for all arcs. Each arc must have a weight >= 1.\nMissing weights are automatically set equal to 1.")
+        for u,v,data in G.edges(data=True):
+            if not 'weight' in data:
+                data['weight'] = 1
+
     #Sum weights of all arcs
     totalWEI = 0
     for u,v,data in G.edges(data=True):
@@ -174,20 +176,25 @@ def dc_all (G, alpha = 1, normalize = False):
         D2max = np.log10(n1) * n1
         D2min = (1-alphalist[1]) * np.log10(n1) * n1
         
-        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1     
-        D3alpha1 = np.log10(maxwij + ((minwij-1)/(n1-1))) / np.log10(maxwij)
-        D3alpha2 = np.log10((n1*(maxwij-1))/(n1-1)) / np.log10(maxwij)
-        if alphalist[2] > 1 and alphalist[2] < D3alpha1:
-            D3min = minwij * np.log10((minwij + (n1-1)*maxwij) / ((n1-1) * (maxwij**alphalist[2]) +1))
-        elif alphalist[2] > 1 and alphalist[2] > D3alpha2:
-            D3min = maxwij * np.log10((maxwij * n1) / ((n1-1) * (maxwij**alphalist[2]) +1))
-        elif alphalist[2] == 1:
+        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1  
+        if alphalist[2] == 1:
             D3min = 0 #isolates
-        else: #do no normalize (if not in range)
-            print("Normalization of D3 is not carried out, for this value of alpha.")
+        elif maxwij == 1:
+            print("Normalization of D3 is not carried out, as maxwij = 1.")
             D3max = 1
-            D3min = 0 
-        
+            D3min = 0
+        else:
+            D3alpha1 = np.log10(maxwij + ((minwij-1)/(n1-1))) / np.log10(maxwij)
+            D3alpha2 = np.log10((n1*(maxwij-1))/(n1-1)) / np.log10(maxwij)
+            if alphalist[2] > 1 and alphalist[2] < D3alpha1:
+                D3min = minwij * np.log10((minwij + (n1-1)*maxwij) / ((n1-1) * (maxwij**alphalist[2]) +1))
+            elif alphalist[2] > 1 and alphalist[2] > D3alpha2:
+                D3min = maxwij * np.log10((maxwij * n1) / ((n1-1) * (maxwij**alphalist[2]) +1))
+            else: #do no normalize (if not in range)
+                print("Normalization of D3 is not carried out, for this value of alpha.")
+                D3max = 1
+                D3min = 0            
+    
         D4max = n1 * maxwij
         D4min = 0
         
