@@ -15,6 +15,10 @@ def g_preprocess(G, alpha = 1):
     #Make an independent copy of the graph
     G = G.copy()
     
+    if G.number_of_nodes() < 3:
+        print("Error graph must have at least 3 nodes.")
+        return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
+    
     #From multigraph to graph
     if type(G) == nx.MultiGraph:
         print("MultiGraph converted to Graph")
@@ -176,30 +180,18 @@ def dc_all (G, alpha = 1, normalize = False):
         D2max = np.log10(n1) * n1
         D2min = (1-alphalist[1]) * np.log10(n1) * n1
         
-        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1  
-        if alphalist[2] == 1:
-            D3min = 0 #isolates
-        elif maxwij == 1:
-            print("Normalization of D3 is not carried out, as maxwij = 1.")
-            D3max = 1
-            D3min = 0
+        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1
+        threshold = (n1-1) *(maxwij**alphalist[2] - maxwij)
+        if (minwij - 1) > threshold:
+            D3min = 0 #considers isolates # minwij * np.log10(((n1-1)*maxwij + minwij)/((n1-1)*(maxwij)**alphalist[2] + 1))
         else:
-            D3alpha1 = np.log10(maxwij + ((minwij-1)/(n1-1))) / np.log10(maxwij)
-            D3alpha2 = np.log10((n1*(maxwij-1))/(n1-1)) / np.log10(maxwij)
-            if alphalist[2] > 1 and alphalist[2] < D3alpha1:
-                D3min = minwij * np.log10((minwij + (n1-1)*maxwij) / ((n1-1) * (maxwij**alphalist[2]) +1))
-            elif alphalist[2] > 1 and alphalist[2] > D3alpha2:
-                D3min = maxwij * np.log10((maxwij * n1) / ((n1-1) * (maxwij**alphalist[2]) +1))
-            else: #do no normalize (if not in range)
-                print("Normalization of D3 is not carried out, for this value of alpha.")
-                D3max = 1
-                D3min = 0            
+            D3min = n1 * maxwij * np.log10( ((n1-1)*maxwij + minwij) / ((n1-1) * (maxwij)**alphalist[2] + 1) )
     
         D4max = n1 * maxwij
-        D4min = 0
+        D4min = 0 #considers isolates # minwij / (1 + (n1-1) * (maxwij/minwij)**alphalist[3])
         
         D5max = n1
-        D5min = 0 #considers isolates
+        D5min = 0 #considers isolates # 1/(n1**alphalist[4])
     else:
         D1max = D2max = D3max = D4max = D5max = 1
         D1min = D2min = D3min = D4min = D5min = 0
