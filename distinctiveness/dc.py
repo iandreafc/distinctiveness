@@ -139,7 +139,7 @@ def g_preprocess(G, alpha = 1):
         maxwij = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
         minwij = min(dict(G.edges).items(), key=lambda x: x[1]['weight'])[1]["weight"]
     else:
-        print("Graph has no edges (remember that loops have been removed). I will return all zeros, regardless of normalizaiton.")
+        print("Graph has no edges (remember that loops have been removed). The function will return all zeros, regardless of normalizaiton.")
         hasedges = False
         maxwij = np.nan
         minwij = np.nan
@@ -174,13 +174,19 @@ def dc_all (G, alpha = 1, normalize = False):
     
     #Define max of all metrics
     if normalize == True:
+        print("WARNING. Normalization of D3 is carried out using loose upper and lower bounds.")
+        
         D1max = np.log10(n1) * n1 * maxwij
         D1min = (1-alphalist[0]) * maxwij * np.log10(n1) * n1
         
         D2max = np.log10(n1) * n1
         D2min = (1-alphalist[1]) * np.log10(n1) * n1
         
-        D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1  #np.log10(totalWEI) * maxwij * n1
+        if type(G) == nx.Graph:
+            D3max = np.log10(maxwij * (n1+1) * n1 * 0.5) * maxwij * n1
+        elif type(G) == nx.DiGraph:
+            D3max = np.log10(maxwij * (n1+1) * n1) * maxwij * n1
+            
         threshold = (n1-1) *(maxwij**alphalist[2] - maxwij)
         if (minwij - 1) > threshold:
             D3min = 0 #considers isolates # minwij * np.log10(((n1-1)*maxwij + minwij)/((n1-1)*(maxwij)**alphalist[2] + 1))

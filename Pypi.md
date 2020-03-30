@@ -5,4 +5,4 @@ Tutorials and code available on GitHub: https://github.com/iandreafc/distinctive
 
 
 ## Please cite as
-Fronzetti Colladon, A., & Naldi, M. (2019). Distinctiveness Centrality in Social Networks. Manuscript submitted for publication. Retrieved from http://arxiv.org/abs/1912.03391
+Fronzetti Colladon, A., & Naldi, M. (2020). Distinctiveness Centrality in Social Networks. Manuscript submitted for publication. Retrieved from http://arxiv.org/abs/1912.03391
