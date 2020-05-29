@@ -1,10 +1,19 @@
-site_name: distinctiveness
+site_name: Distinctiveness Centrality Python
 site_author: Andrea Fronzetti Colladon
 site_description: Documentation of the 'distinctiveness' Python package.
+
 nav:
     - Home: index.md
     - Functions: functions.md
+
 theme: readthedocs
-#repo_url: https://github.com/iandreafc/distinctiveness/
-#repo_name: 'GitHub'
+
+repo_url: https://github.com/iandreafc/distinctiveness/
+repo_name: 'GitHub'
+
+extra_javascript: 
+    - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+
+markdown_extensions:
+    - mdx_math
 

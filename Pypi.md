@@ -1,4 +1,4 @@
-# Distinctiveness Centrality - Python Library
+# Distinctiveness Centrality
 A Python library to calculate Distinctiveness Centrality in social networks. 
 
 Tutorials and code available on GitHub: https://github.com/iandreafc/distinctiveness
