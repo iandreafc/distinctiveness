@@ -2,7 +2,48 @@ import networkx as nx
 import numpy as np
 
 
-def g_preprocess(G, alpha=1):
+def weisumalpha(G, a):
+    if a != 1:
+        wei_sum_alpha = {}
+        for node in G.nodes():
+            wei_sum_alpha[node] = sum(
+                [
+                    e[2]["weight"] ** a
+                    for e in list(G.edges(node, data=True))
+                ]
+            )
+    else:
+        wei_sum_alpha = dict(nx.degree(G, weight="weight"))
+
+    return wei_sum_alpha
+
+
+def weiinoutsumalpha(G, a):
+    if a != 1:
+        wei_outsum_alpha = {}
+        wei_insum_alpha = {}
+        for node in G.nodes():
+            wei_outsum_alpha[node] = sum(
+                [
+                    e[2]["weight"] ** a
+                    for e in list(G.out_edges(node, data=True))
+                ]
+            )
+            wei_insum_alpha[node] = sum(
+                [
+                    e[2]["weight"] ** a
+                    for e in list(G.in_edges(node, data=True))
+                ]
+            )
+    else:
+        wei_insum_alpha = dict(G.in_degree(weight="weight"))
+        wei_outsum_alpha = dict(G.out_degree(weight="weight"))
+        
+    return wei_insum_alpha, wei_outsum_alpha
+    
+
+def g_preprocess(G, alpha=1,
+                 measures=["D1", "D2", "D3", "D4", "D5"]):
 
     if isinstance(alpha, list) and len(alpha) == 5:
         alphalist = alpha
@@ -98,47 +139,52 @@ def g_preprocess(G, alpha=1):
 
     # Sums the weight of all arcs
     totalWEI = 0
-    for u, v, data in G.edges(data=True):
-        totalWEI += data["weight"]
+    if "D3" in measures:
+        for u, v, data in G.edges(data=True):
+            totalWEI += data["weight"]
 
     n1 = nx.number_of_nodes(G) - 1
 
     # Calculates degree and weighted degree, taking alpha into account
     if type(G) == nx.Graph:
-        deg = dict(nx.degree(G))
+        if any(m in measures for m in ["D1", "D2", "D5"]):
+            deg = dict(nx.degree(G))
+        else:
+            deg = np.nan
         indeg = outdeg = wei_insum_alpha_list = wei_outsum_alpha_list = np.nan
 
         # Calculate weighted degree, taking alpha into account
         # case of different alphas for each metric
         if len(set(alphalist)) != 1:
             wei_sum_alpha_list = [0, 0]
-            for a in alphalist[2:4]:  # Only needed for D3 and D4
-                if a != 1:
+            
+            # Only needed for D3 and D4
+            if "D3" in measures:
+                wei_sum_alpha_list.append(weisumalpha (G, alphalist[2]))
+            else:
+                wei_sum_alpha_list += [0]
+                
+            if "D4" in measures:
+                wei_sum_alpha_list.append(weisumalpha (G, alphalist[3]))
+            else:
+                wei_sum_alpha_list += [0]
+
+            wei_sum_alpha_list += [0]
+        else:
+            if any(m in measures for m in ["D3", "D4"]):
+                if alphalist[0] != 1:
                     wei_sum_alpha = {}
                     for node in G.nodes():
                         wei_sum_alpha[node] = sum(
                             [
-                                e[2]["weight"] ** a
+                                e[2]["weight"] ** alphalist[0]
                                 for e in list(G.edges(node, data=True))
                             ]
                         )
                 else:
                     wei_sum_alpha = dict(nx.degree(G, weight="weight"))
-
-                wei_sum_alpha_list.append(wei_sum_alpha)
-            wei_sum_alpha_list += [0]
-        else:
-            if alphalist[0] != 1:
-                wei_sum_alpha = {}
-                for node in G.nodes():
-                    wei_sum_alpha[node] = sum(
-                        [
-                            e[2]["weight"] ** alphalist[0]
-                            for e in list(G.edges(node, data=True))
-                        ]
-                    )
             else:
-                wei_sum_alpha = dict(nx.degree(G, weight="weight"))
+                wei_sum_alpha = 0
 
             wei_sum_alpha_list = (
                 [0, 0] + [wei_sum_alpha] * 2 + [0]
@@ -146,58 +192,58 @@ def g_preprocess(G, alpha=1):
 
     elif type(G) == nx.DiGraph:
         deg = wei_sum_alpha_list = np.nan
-        indeg = dict(G.in_degree())
-        outdeg = dict(G.out_degree())
+        if any(m in measures for m in ["D1", "D2", "D5"]):
+            indeg = dict(G.in_degree())
+            outdeg = dict(G.out_degree())
+        else:
+            indeg = outdeg = np.nan
 
         if len(set(alphalist)) != 1:
             wei_insum_alpha_list = [0, 0]
             wei_outsum_alpha_list = [0, 0]
-            for a in alphalist[2:4]:
-                if a != 1:
+            
+            # Only needed for D3 and D4
+            if "D3" in measures:
+                insum, outsum = weiinoutsumalpha(G, alphalist[2])
+                wei_insum_alpha_list.append(insum)
+                wei_outsum_alpha_list.append(outsum)
+            else:
+                wei_insum_alpha_list.append(0)
+                wei_outsum_alpha_list.append(0)
+                
+            if "D4" in measures:
+                insum, outsum = weiinoutsumalpha(G, alphalist[3])
+                wei_insum_alpha_list.append(insum)
+                wei_outsum_alpha_list.append(outsum)
+            else:
+                wei_insum_alpha_list.append(0)
+                wei_outsum_alpha_list.append(0)
+
+            wei_insum_alpha_list += [0]
+            wei_outsum_alpha_list += [0]
+        else:
+            if any(m in measures for m in ["D3", "D4"]):
+                if alphalist[0] != 1:
                     wei_outsum_alpha = {}
                     wei_insum_alpha = {}
                     for node in G.nodes():
                         wei_outsum_alpha[node] = sum(
                             [
-                                e[2]["weight"] ** a
+                                e[2]["weight"] ** alphalist[0]
                                 for e in list(G.out_edges(node, data=True))
                             ]
                         )
                         wei_insum_alpha[node] = sum(
                             [
-                                e[2]["weight"] ** a
+                                e[2]["weight"] ** alphalist[0]
                                 for e in list(G.in_edges(node, data=True))
                             ]
                         )
                 else:
                     wei_insum_alpha = dict(G.in_degree(weight="weight"))
                     wei_outsum_alpha = dict(G.out_degree(weight="weight"))
-
-                wei_insum_alpha_list.append(wei_insum_alpha)
-                wei_outsum_alpha_list.append(wei_outsum_alpha)
-
-            wei_insum_alpha_list += [0]
-            wei_outsum_alpha_list += [0]
-        else:
-            if alphalist[0] != 1:
-                wei_outsum_alpha = {}
-                wei_insum_alpha = {}
-                for node in G.nodes():
-                    wei_outsum_alpha[node] = sum(
-                        [
-                            e[2]["weight"] ** alphalist[0]
-                            for e in list(G.out_edges(node, data=True))
-                        ]
-                    )
-                    wei_insum_alpha[node] = sum(
-                        [
-                            e[2]["weight"] ** alphalist[0]
-                            for e in list(G.in_edges(node, data=True))
-                        ]
-                    )
             else:
-                wei_insum_alpha = dict(G.in_degree(weight="weight"))
-                wei_outsum_alpha = dict(G.out_degree(weight="weight"))
+                wei_insum_alpha = wei_outsum_alpha = 0
 
             wei_insum_alpha_list = [0, 0] + [wei_insum_alpha] * 2 + [0]
             wei_outsum_alpha_list = [0, 0] + [wei_outsum_alpha] * 2 + [0]
@@ -205,10 +251,16 @@ def g_preprocess(G, alpha=1):
     # Calculate max and min arc weight
     if G.number_of_edges() > 0:
         hasedges = True
-        maxwij = max(dict(G.edges).items(),
-                     key=lambda x: x[1]["weight"])[1]["weight"]
-        minwij = min(dict(G.edges).items(),
-                     key=lambda x: x[1]["weight"])[1]["weight"]
+        if any(m in measures for m in ["D1", "D3", "D4"]):
+            maxwij = max(dict(G.edges).items(),
+                         key=lambda x: x[1]["weight"])[1]["weight"]
+        else:
+            maxwij = np.nan
+        if "D3" in measures:
+            minwij = min(dict(G.edges).items(),
+                         key=lambda x: x[1]["weight"])[1]["weight"]
+        else:
+            minwij = np.nan
     else:
         print(
             "Graph has no edges (remember that loops have been removed)."
@@ -273,7 +325,7 @@ def distinctiveness(G, alpha=1, normalize=False,
         maxwij,
         minwij,
         hasedges,
-    ) = g_preprocess(G, alpha=alpha)
+    ) = g_preprocess(G, alpha=alpha, measures=measures)
 
     if not hasedges:
         normalize = False
@@ -286,36 +338,41 @@ def distinctiveness(G, alpha=1, normalize=False,
             "WARNING. Normalization of D3 is"
             " carried out using loose upper and lower bounds."
         )
+        
+        if "D1" in measures:
+            D1max = np.log10(n1) * n1 * maxwij
+            D1min = (1 - alphalist[0]) * maxwij * np.log10(n1) * n1
 
-        D1max = np.log10(n1) * n1 * maxwij
-        D1min = (1 - alphalist[0]) * maxwij * np.log10(n1) * n1
+        if "D2" in measures:
+            D2max = np.log10(n1) * n1
+            D2min = (1 - alphalist[1]) * np.log10(n1) * n1
 
-        D2max = np.log10(n1) * n1
-        D2min = (1 - alphalist[1]) * np.log10(n1) * n1
-
-        if type(G) == nx.Graph:
-            D3max = np.log10(maxwij * (n1 + 1) * n1 * 0.5) * maxwij * n1
-        elif type(G) == nx.DiGraph:
-            D3max = np.log10(maxwij * (n1 + 1) * n1) * maxwij * n1
-
-        threshold = (n1 - 1) * (maxwij ** alphalist[2] - maxwij)
-        if (minwij - 1) > threshold:
-            D3min = 0  # considers isolates
-        else:
-            D3min = (
-                n1
-                * maxwij
-                * np.log10(
-                    ((n1 - 1) * maxwij + minwij)
-                    / ((n1 - 1) * (maxwij) ** alphalist[2] + 1)
+        if "D3" in measures:
+            if type(G) == nx.Graph:
+                D3max = np.log10(maxwij * (n1 + 1) * n1 * 0.5) * maxwij * n1
+            elif type(G) == nx.DiGraph:
+                D3max = np.log10(maxwij * (n1 + 1) * n1) * maxwij * n1
+    
+            threshold = (n1 - 1) * (maxwij ** alphalist[2] - maxwij)
+            if (minwij - 1) > threshold:
+                D3min = 0  # considers isolates
+            else:
+                D3min = (
+                    n1
+                    * maxwij
+                    * np.log10(
+                        ((n1 - 1) * maxwij + minwij)
+                        / ((n1 - 1) * (maxwij) ** alphalist[2] + 1)
+                    )
                 )
-            )
 
-        D4max = n1 * maxwij
-        D4min = 0  # considers isolates
+        if "D4" in measures:
+            D4max = n1 * maxwij
+            D4min = 0  # considers isolates
 
-        D5max = n1
-        D5min = 0  # considers isolates # 1/(n1**alphalist[4])
+        if "D5" in measures:
+            D5max = n1
+            D5min = 0  # considers isolates # 1/(n1**alphalist[4])
     else:
         D1max = D2max = D3max = D4max = D5max = 1
         D1min = D2min = D3min = D4min = D5min = 0
