@@ -43,7 +43,6 @@ Two more functions are provided to calculate distinctiveness base on node and ed
   A [Networkx](https://networkx.github.io)Graph or DiGraph. Multigraphs are automaticallyt ransformed into graphs, by summing arc weights. Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
 
 * **attname**: `string`
-
   Indicates the name of the node attribute to consider for the calculation of distinctiveness. The function automatically extracts all the possible values for that attribute.
 
 * **alpha** : `float` or `list`, optional (default=1)
@@ -65,7 +64,6 @@ Two more functions are provided to calculate distinctiveness base on node and ed
   A [Networkx](https://networkx.github.io)Graph or DiGraph. Multigraphs are automaticallyt ransformed into graphs, by summing arc weights. Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
 
 * **attname**: `string`
-
   Indicates the name of the edge attribute to consider for the calculation of distinctiveness. The function automatically extracts all the possible values for that attribute.
 
 * **alpha** : `float` or `list`, optional (default=1)
