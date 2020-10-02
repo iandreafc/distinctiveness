@@ -5,7 +5,7 @@ with open("Pypi.md", "r") as fh:
 
 setuptools.setup(
     name="distinctiveness",
-    version="0.14.04",
+    version="0.14.05",
     author="Andrea Fronzetti Colladon",
     description="A Python package to calculate Distinctiveness Centrality",
     long_description=long_description,
@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/iandreafc/distinctiveness",
     packages=setuptools.find_packages(),
-    install_requires=['networkx', 'numpy'],
+    install_requires=['networkx', 'numpy', 'pandas'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

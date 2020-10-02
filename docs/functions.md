@@ -20,21 +20,66 @@ Similarly to the case of in- and out-degree, it is possible to calculate in- and
 
 * **G** : `Graph`
   A [Networkx](https://networkx.github.io)Graph or DiGraph. Multigraphs are automaticallyt ransformed into graphs, by summing arc weights. Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
+* **alpha** : `float` or `list`, optional (default=1)
+  Alpha must be a number greater or equal to 1. It represents the value of the alpha parameter used in the formulas of distinctiveness centrality. If one value is provided, it will be used for all the five metrics. Alternatively, alpha can be a list of five numbers, used to specify different coefficients for the different metrics (e.g. alpha = [1, 2, 1, 1, 3]).
+* **normalize** : `bool`, optional (default=False)
+  Normalize can be set to True, to obtain normalized scores for each metric, considering upper and lower bounds. Loose upper
+  and lower bounds are used for D3.
+* **measures** : `list`, optional (default=["D1", "D2", "D3", "D4", "D5"])
+  Distinctiveness centrality can be calculated considering 5 different weighting schemes. This parameter can be adjusted to select which metrics should be computed. The default option is to calculate them all.
+
+#### Returns
+
+* **nodes** : `dictionary`
+  A dictionary with a key for all selected measures. Since distinctiveness can be calculated using five different formulas, the 5 keys for undirected networks are named as D1, D2, D3, D4 and D5. These measures can be calculated if a Graph is given as input. The other 10 measures are for directed networks and will be available if a DiGraph is given as input. These are: D1_in, D2_in, D3_in, D4_in, D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.
+
+
+
+Two more functions are provided to calculate distinctiveness base on node and edge attributes.
+
+**`dc_nodeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`**  : calculates distinctiveness centrality for directed and undirected graphs, separating the contribution of each node, based on a specific attribute (such as *gender*). 
+
+* **G** : `Graph`
+  A [Networkx](https://networkx.github.io)Graph or DiGraph. Multigraphs are automaticallyt ransformed into graphs, by summing arc weights. Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
+
+* **attname**: `string`
+
+  Indicates the name of the node attribute to consider for the calculation of distinctiveness. The function automatically extracts all the possible values for that attribute.
 
 * **alpha** : `float` or `list`, optional (default=1)
   Alpha must be a number greater or equal to 1. It represents the value of the alpha parameter used in the formulas of distinctiveness centrality. If one value is provided, it will be used for all the five metrics. Alternatively, alpha can be a list of five numbers, used to specify different coefficients for the different metrics (e.g. alpha = [1, 2, 1, 1, 3]).
 
-* **normalize** : `bool`, optional (default=False)
-  Normalize can be set to True, to obtain normalized scores for each metric, considering upper and lower bounds. Loose upper
-  and lower bounds are used for D3.
+* **measures** : `list`, optional (default=["D1", "D2", "D3", "D4", "D5"])
+  Distinctiveness centrality can be calculated considering 5 different weighting schemes. This parameter can be adjusted to select which metrics should be computed. The default option is to calculate them all.
+
+#### Returns
+
+* **DC** : `Pandas DataFrame`
+  A Pandas DataFrame containing the distinctiveness centrality metrics for all the selected measures, with separate scores for each possible attribute value.
+
+
+
+**`dc_edgeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`** : calculates distinctiveness centrality for directed and undirected graphs, based on a specific attribute of edges (such as distinguishing between friendship and family ties). 
+
+* **G** : `Graph`
+  A [Networkx](https://networkx.github.io)Graph or DiGraph. Multigraphs are automaticallyt ransformed into graphs, by summing arc weights. Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
+
+* **attname**: `string`
+
+  Indicates the name of the edge attribute to consider for the calculation of distinctiveness. The function automatically extracts all the possible values for that attribute.
+
+* **alpha** : `float` or `list`, optional (default=1)
+  Alpha must be a number greater or equal to 1. It represents the value of the alpha parameter used in the formulas of distinctiveness centrality. If one value is provided, it will be used for all the five metrics. Alternatively, alpha can be a list of five numbers, used to specify different coefficients for the different metrics (e.g. alpha = [1, 2, 1, 1, 3]).
 
 * **measures** : `list`, optional (default=["D1", "D2", "D3", "D4", "D5"])
   Distinctiveness centrality can be calculated considering 5 different weighting schemes. This parameter can be adjusted to select which metrics should be computed. The default option is to calculate them all.
 
-Returns
--------
-* **nodes** : `dictionary`
-  A dictionary with a key for all selected measures. Since distinctiveness can be calculated using five different formulas, the 5 keys for undirected networks are named as D1, D2, D3, D4 and D5. These measures can be calculated if a Graph is given as input. The other 10 measures are for directed networks and will be available if a DiGraph is given as input. These are: D1_in, D2_in, D3_in, D4_in, D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.
+#### Returns
+
+* **DC** : `Pandas DataFrame`
+  A Pandas DataFrame containing the distinctiveness centrality metrics for all the selected measures, with separate scores for each possible attribute value.
+
+  
 
 References
 ----------

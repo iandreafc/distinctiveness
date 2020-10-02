@@ -1,5 +1,6 @@
 import networkx as nx
 import numpy as np
+import pandas as pd
 
 
 def weisumalpha(G, a):
@@ -577,3 +578,256 @@ def distinctiveness(G, alpha=1, normalize=False,
     DC = {k: v for k, v in DC.items() if not isinstance(v, float)}
 
     return DC
+
+
+
+
+########### *************************************** EXPERIMENTAL *********************************************** ##
+
+def distinctiveness_byattribute(G, attname, attval, alpha=1, measures=["D1", "D2", "D3", "D4", "D5"]):
+
+    if isinstance(alpha, list) and len(alpha) == 5:
+        alphalist = alpha
+    elif isinstance(alpha, (int, float)):
+        alphalist = [alpha] * 5
+    else:
+        print(
+            "Error in the choice of alpha."
+            " Please specify a single number or a list of 5 values."
+        )
+        return np.nan
+
+    if any(a < 1 for a in alphalist):
+        print(
+            "WARNING. Alpha should be >= 1,"
+            " except you exactly know what you are doing."
+        )
+
+    (
+        G,
+        n1,
+        deg,
+        indeg,
+        outdeg,
+        wei_insum_alpha_list,
+        wei_outsum_alpha_list,
+        wei_sum_alpha_list,
+        totalWEI,
+        maxwij,
+        minwij,
+        hasedges,
+    ) = g_preprocess(G, alpha=alpha, measures=measures)
+
+    Glist = list(G.nodes)
+
+    # Computes Distinctiveness Centrality, all 5 metrics
+    if type(G) == nx.Graph:
+        # Set keys to zero for all nodes (to take isolates into account)
+        if "D1" in measures:
+            d1 = dict.fromkeys(Glist, 0)
+        else:
+            d1 = np.nan
+        if "D2" in measures:
+            d2 = dict.fromkeys(Glist, 0)
+        else:
+            d2 = np.nan
+        if "D3" in measures:
+            d3 = dict.fromkeys(Glist, 0)
+        else:
+            d3 = np.nan
+        if "D4" in measures:
+            d4 = dict.fromkeys(Glist, 0)
+        else:
+            d4 = np.nan
+        if "D5" in measures:
+            d5 = dict.fromkeys(Glist, 0)
+        else:
+            d5 = np.nan
+
+        d1_in = np.nan
+        d2_in = np.nan
+        d3_in = np.nan
+        d4_in = np.nan
+        d5_in = np.nan
+        d1_out = np.nan
+        d2_out = np.nan
+        d3_out = np.nan
+        d4_out = np.nan
+        d5_out = np.nan
+        
+        for u, v, data in G.edges(data=True):
+            if "D1" in measures:
+                if G.nodes[v][attname] == attval:
+                    d1[u] += data["weight"] * np.log10(n1 / deg[v] ** alphalist[0])
+                if G.nodes[u][attname] == attval:
+                    d1[v] += data["weight"] * np.log10(n1 / deg[u] ** alphalist[0])
+
+            if "D2" in measures:
+                if G.nodes[v][attname] == attval:
+                    d2[u] += 1 * np.log10(n1 / deg[v] ** alphalist[1])
+                if G.nodes[u][attname] == attval:
+                    d2[v] += 1 * np.log10(n1 / deg[u] ** alphalist[1])
+
+            if "D3" in measures:
+                if G.nodes[v][attname] == attval:
+                    d3[u] += data["weight"] * np.log10(
+                        totalWEI
+                        / (wei_sum_alpha_list[2][v]
+                           - data["weight"] ** alphalist[2] + 1)
+                    )
+                if G.nodes[u][attname] == attval:
+                    d3[v] += data["weight"] * np.log10(
+                        totalWEI
+                        / (wei_sum_alpha_list[2][u]
+                           - data["weight"] ** alphalist[2] + 1)
+                    )
+
+            if "D4" in measures:
+                if G.nodes[v][attname] == attval:
+                    d4[u] += data["weight"] * (
+                        data["weight"] ** alphalist[3] / wei_sum_alpha_list[3][v]
+                    )
+                if G.nodes[u][attname] == attval:
+                    d4[v] += data["weight"] * (
+                        data["weight"] ** alphalist[3] / wei_sum_alpha_list[3][u]
+                    )
+
+            if "D5" in measures:
+                if G.nodes[v][attname] == attval:
+                    d5[u] += 1 * (1 / deg[v] ** alphalist[4])
+                if G.nodes[u][attname] == attval:
+                    d5[v] += 1 * (1 / deg[u] ** alphalist[4])
+
+
+    elif type(G) == nx.DiGraph:
+        # Set keys to zero for all nodes
+        # (to take isolates into account and nodes with zero in- or out-degree)
+        if "D1" in measures:
+            d1_in = dict.fromkeys(Glist, 0)
+            d1_out = dict.fromkeys(Glist, 0)
+        else:
+            d1_in = d1_out = np.nan
+        if "D2" in measures:
+            d2_in = dict.fromkeys(Glist, 0)
+            d2_out = dict.fromkeys(Glist, 0)
+        else:
+            d2_in = d2_out = np.nan
+        if "D3" in measures:
+            d3_in = dict.fromkeys(Glist, 0)
+            d3_out = dict.fromkeys(Glist, 0)
+        else:
+            d3_in = d3_out = np.nan
+        if "D4" in measures:
+            d4_in = dict.fromkeys(Glist, 0)
+            d4_out = dict.fromkeys(Glist, 0)
+        else:
+            d4_in = d4_out = np.nan
+        if "D5" in measures:
+            d5_in = dict.fromkeys(Glist, 0)
+            d5_out = dict.fromkeys(Glist, 0)
+        else:
+            d5_in = d5_out = np.nan
+
+        d1 = d2 = d3 = d4 = d5 = np.nan
+
+        for u, v, data in G.edges(data=True):
+
+            if "D1" in measures:
+                if G.nodes[u][attname] == attval:
+                    d1_in[v] += data["weight"] * \
+                        np.log10(n1
+                                 / outdeg[u] ** alphalist[0])
+                if G.nodes[v][attname] == attval:
+                    d1_out[u] += data["weight"] * \
+                        np.log10(n1
+                                 / indeg[v] ** alphalist[0])
+
+            if "D2" in measures:
+                if G.nodes[u][attname] == attval:
+                    d2_in[v] += 1 * np.log10(n1 / outdeg[u] ** alphalist[1])
+                if G.nodes[v][attname] == attval:
+                    d2_out[u] += 1 * np.log10(n1 / indeg[v] ** alphalist[1])
+
+            if "D3" in measures:
+                if G.nodes[u][attname] == attval:
+                    d3_in[v] += data["weight"] * np.log10(
+                        totalWEI
+                        / (wei_outsum_alpha_list[2][u]
+                           - data["weight"] ** alphalist[2] + 1)
+                    )
+                if G.nodes[v][attname] == attval:
+                    d3_out[u] += data["weight"] * np.log10(
+                        totalWEI
+                        / (wei_insum_alpha_list[2][v]
+                           - data["weight"] ** alphalist[2] + 1)
+                    )
+
+            if "D4" in measures:
+                if G.nodes[u][attname] == attval:
+                    d4_in[v] += data["weight"] * (
+                        data["weight"] ** alphalist[3]
+                        / wei_outsum_alpha_list[3][u]
+                    )
+                if G.nodes[v][attname] == attval:
+                    d4_out[u] += data["weight"] * (
+                        data["weight"] ** alphalist[3]
+                        / wei_insum_alpha_list[3][v]
+                    )
+
+            if "D5" in measures:
+                if G.nodes[u][attname] == attval:
+                    d5_in[v] += 1 * (1 / outdeg[u] ** alphalist[4])
+                if G.nodes[v][attname] == attval:
+                    d5_out[u] += 1 * (1 / indeg[v] ** alphalist[4])
+
+    DC = {
+        "D1": d1,
+        "D2": d2,
+        "D3": d3,
+        "D4": d4,
+        "D5": d5,
+        "D1_in": d1_in,
+        "D2_in": d2_in,
+        "D3_in": d3_in,
+        "D4_in": d4_in,
+        "D5_in": d5_in,
+        "D1_out": d1_out,
+        "D2_out": d2_out,
+        "D3_out": d3_out,
+        "D4_out": d4_out,
+        "D5_out": d5_out,
+    }
+    DC = {k: v for k, v in DC.items() if not isinstance(v, float)}
+
+    return DC
+
+
+def dc_nodeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"]):
+
+    DCall = pd.DataFrame()
+    for attval in set([v[attname] for k,v in dict(G.nodes(data=True)).items()]):
+        DC_att = distinctiveness_byattribute(G, attname, attval, alpha= alpha, measures= measures)    
+        DC_att = pd.DataFrame(DC_att).sort_index()
+        
+        DC_att.columns = [x+"_"+str(attval) for x in DC_att.columns]
+        DCall = pd.concat([DCall, DC_att], axis = 1)
+           
+    return DCall
+
+
+    
+def dc_edgeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"]):
+    
+    DCall = pd.DataFrame()
+    for attval in set([e[2][attname] for e in G.edges(data=True)]):
+        G1 = G.copy()
+        for e in G.edges(data=True):
+            if not e[2][attname] == attval:
+                G1.remove_edge(*e[:2]) 
+        
+        DC_edge = distinctiveness(G1, alpha= alpha, measures= measures)
+        DC_edge = pd.DataFrame(DC_edge).sort_index()
+        DC_edge.columns = [x+"_"+str(attval) for x in DC_edge.columns]
+        DCall = pd.concat([DCall, DC_edge], axis = 1)
+        
+    return DCall

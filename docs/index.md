@@ -15,7 +15,7 @@ Install by running:
 Chek the [functions page](functions.md) for details.
 
 ## Tutorial
-A tutorial is available [here](https://github.com/iandreafc/distinctiveness/blob/master/DistinctivenessCentralityDemo.ipynb).
+Tutorials are available in the [GitHub repository](https://github.com/iandreafc/distinctiveness).
 
 ## Contribute
 
