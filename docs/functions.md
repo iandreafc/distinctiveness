@@ -35,7 +35,7 @@ Similarly to the case of in- and out-degree, it is possible to calculate in- and
 
 
 
-Two more functions are provided to calculate distinctiveness base on node and edge attributes.
+##### Two more functions are provided to calculate distinctiveness based on node and edge attributes.
 
 **`dc_nodeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`**  : calculates distinctiveness centrality for directed and undirected graphs, separating the contribution of each node, based on a specific attribute (such as *gender*). 
 

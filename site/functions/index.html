@@ -57,6 +57,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#function-and-parameters">Function and Parameters</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#returns">Returns</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#two-more-functions-are-provided-to-calculate-distinctiveness-based-on-node-and-edge-attributes">Two more functions are provided to calculate distinctiveness based on node and edge attributes.</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#returns_1">Returns</a>
     </li>
@@ -128,7 +132,7 @@
 <li><strong>nodes</strong> : <code>dictionary</code>
   A dictionary with a key for all selected measures. Since distinctiveness can be calculated using five different formulas, the 5 keys for undirected networks are named as D1, D2, D3, D4 and D5. These measures can be calculated if a Graph is given as input. The other 10 measures are for directed networks and will be available if a DiGraph is given as input. These are: D1_in, D2_in, D3_in, D4_in, D5_in, D1_out, D2_out, D3_out, D4_out and D5_out.</li>
 </ul>
-<p>Two more functions are provided to calculate distinctiveness base on node and edge attributes.</p>
+<h5 id="two-more-functions-are-provided-to-calculate-distinctiveness-based-on-node-and-edge-attributes">Two more functions are provided to calculate distinctiveness based on node and edge attributes.</h5>
 <p><strong><code>dc_nodeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])</code></strong>  : calculates distinctiveness centrality for directed and undirected graphs, separating the contribution of each node, based on a specific attribute (such as <em>gender</em>). </p>
 <ul>
 <li>
