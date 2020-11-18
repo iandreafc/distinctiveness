@@ -43,7 +43,11 @@ Here *n* is the total number of nodes and g<sub>j</sub> the degree of node *j*. 
 
 Similarly to the case of in- and out-degree, it is possible to calculate in- and out-distinctiveness on directed graphs. In directed networks, distinctiveness values incoming arcs more, if they originate at nodes with low out-degree. Indeed, a connection from a node sending arcs towards all other nodes is considered of little value. This can be explained through an example of love-letter writing. Consider the case where student A receives a love-letter from student B, who is sending love-letters to all people in the school. The letter sent to A is much less important to A than the case of B sending only one letter (to A). Indeed, B is ‘spamming’ all the network, sending many outgoing arcs, then each of them gives a low contribution to the receiver’s importance. Similarly, distinctiveness values outgoing arcs more when they reach peers with low in-degree. If the arc sent by a node is the only one, or among the few, to reach another node, that arc will be important. Continuing with the example, if student A receives a love letter from student B only, this is much more important than the case of A receiving many love letters.
 
+
+
 ## Function and Parameters
+
+### Main function
 
 **`distinctiveness(G, alpha = 1, normalize = False, measures=["D1", "D2", "D3", "D4", "D5"])`**  : calculates distinctiveness centrality for directed and undirected graphs.
 
@@ -64,7 +68,7 @@ Similarly to the case of in- and out-degree, it is possible to calculate in- and
 
 
 
-##### Two more functions are provided to calculate distinctiveness based on node and edge attributes.
+### Node Attribute Distinctiveness
 
 **`dc_nodeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`**  : calculates distinctiveness centrality for directed and undirected graphs, separating the contribution of each node, based on a specific attribute (such as *gender*). 
 
@@ -86,6 +90,8 @@ Similarly to the case of in- and out-degree, it is possible to calculate in- and
   A Pandas DataFrame containing the distinctiveness centrality metrics for all the selected measures, with separate scores for each possible attribute value.
 
 
+
+### Edge Attribute Distinctiveness
 
 **`dc_edgeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`** : calculates distinctiveness centrality for directed and undirected graphs, based on a specific attribute of edges (such as distinguishing between friendship and family ties). 
 
