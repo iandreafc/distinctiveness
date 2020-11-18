@@ -1,1 +1,5 @@
-theme: readthedocs
+# Setup
+title: Distinctiveness Docs
+description: Documentation of the Distinctiveness Python package.
+url: 
+locale: en_US
