@@ -1,6 +1,6 @@
 # Distinctiveness Centrality - Python
 A Python library to calculate Distinctiveness Centrality in social networks. 
-For the (R version please see here)[https://github.com/iandreafc/distinctiveness-R].
+For the [R version please see here](https://github.com/iandreafc/distinctiveness-R).
 
 Distinctiveness Centrality is a set of network metrics that attribute larger importance to distinctive connections. This provides an alternative view to that of some established metrics, which identify central nodes based on their brokerage power, the number and weight of their connections, and their ability to quickly reach all other nodes.
 
