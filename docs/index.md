@@ -1,8 +1,8 @@
-# Distinctiveness Docs
+# Distinctiveness Python Docs
 
 **Distinctiveness** is a Python package to calculate *Distinctiveness Centrality* in social and complex networks.
 
-Distinctiveness Centrality is a set of 5 network metrics that attribute larger importance to distinctive connections, i.e. to nodes which have links to loosely connected peers. Revisiting degree and weighted degree centrality, all these metrics penalize connections to hubs or nodes that are very well connected. Distinctiveness measures might serve the identification of strategic social actors, for example those with peripheral connections that keep the network together, avoiding fragmentation. 
+Distinctiveness Centrality is a set of 5 network metrics that attribute larger importance to distinctive connections, i.e. to nodes which have links to loosely connected peers. Revisiting degree and weighted degree centrality, all these metrics penalize connections to hubs or nodes that are very well connected. Distinctiveness measures might serve the identification of strategic social actors, for example those with peripheral connections that keep the network together, avoiding fragmentation.
 
 See the [functions page](functions.md) for more information.
 
@@ -70,7 +70,7 @@ Similarly to the case of in- and out-degree, it is possible to calculate in- and
 
 ### Node Attribute Distinctiveness
 
-**`dc_nodeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`**  : calculates distinctiveness centrality for directed and undirected graphs, separating the contribution of each node, based on a specific attribute (such as *gender*). 
+**`dc_nodeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`**  : calculates distinctiveness centrality for directed and undirected graphs, separating the contribution of each node, based on a specific attribute (such as *gender*).
 
 * **G** : `Graph`
   A [Networkx](https://networkx.github.io) Graph or DiGraph. Multigraphs are automaticallyt ransformed into graphs, by summing arc weights. Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
@@ -93,7 +93,7 @@ Similarly to the case of in- and out-degree, it is possible to calculate in- and
 
 ### Edge Attribute Distinctiveness
 
-**`dc_edgeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`** : calculates distinctiveness centrality for directed and undirected graphs, based on a specific attribute of edges (such as distinguishing between friendship and family ties). 
+**`dc_edgeattribute(G, attname, alpha = 1, measures=["D1", "D2", "D3", "D4", "D5"])`** : calculates distinctiveness centrality for directed and undirected graphs, based on a specific attribute of edges (such as distinguishing between friendship and family ties).
 
 * **G** : `Graph`
   A [Networkx](https://networkx.github.io) Graph or DiGraph. Multigraphs are automaticallyt ransformed into graphs, by summing arc weights. Please note that each arc is expected to have a weight attribute, otherwise each missing weight will be considered equal to 1. Weights have to be >= 1.
