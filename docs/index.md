@@ -4,8 +4,6 @@
 
 Distinctiveness Centrality is a set of 5 network metrics that attribute larger importance to distinctive connections, i.e. to nodes which have links to loosely connected peers. Revisiting degree and weighted degree centrality, all these metrics penalize connections to hubs or nodes that are very well connected. Distinctiveness measures might serve the identification of strategic social actors, for example those with peripheral connections that keep the network together, avoiding fragmentation.
 
-See the [functions page](functions.md) for more information.
-
 ### Installation
 Install by running:
 
